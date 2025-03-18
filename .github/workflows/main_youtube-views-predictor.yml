@@ -1,8 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-# More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
-
-name: Build and deploy Python app to Azure Web App - youtube-views-predictor
+name: Build and deploy Python + Vue app to Azure Web App
 
 on:
   push:
@@ -14,11 +10,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
 
+      # 1) Node 설치 (Vue 빌드용)
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      # 2) Vue 빌드
+      - name: Install and build Vue
+        run: |
+          cd frontend
+          npm install
+          npm run build
+          cd ..
+
+      # 3) Python 설정
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
@@ -29,10 +40,10 @@ jobs:
           python -m venv venv
           source venv/bin/activate
       
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: pip install -r requirements.txt
         
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+      # (Optional) PyTest나 기타 테스트 단계 추가 가능
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
@@ -51,10 +62,7 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
-
+    
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
@@ -64,18 +72,10 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2332CD9851B641E58859D3914D62026E }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D2AA0BEFAE194D22A3413F973B3F12D2 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2F681B92DCBE41F7BF310280F2059945 }}
-
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
           app-name: 'youtube-views-predictor'
           slot-name: 'Production'
-          
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_XXXX }}
