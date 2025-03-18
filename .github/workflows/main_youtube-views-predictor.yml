@@ -27,6 +27,7 @@ jobs:
           cd frontend
           npm install
           npm run build
+          cd ..
 
       # 3) Python 설정 (Flask)
       - name: Set up Python version

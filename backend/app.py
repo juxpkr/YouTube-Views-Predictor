@@ -5,7 +5,7 @@ import joblib
 import pandas as pd
 
 # 여기서 Vue 빌드 결과물을 서빙하기 위해 static_folder를 지정
-app = Flask(__name__, static_folder="../frontend/dist", static_url_path="")
+app = Flask(__name__, static_folder="../frontend_build", static_url_path="")
 CORS(app)  # CORS 허용 (다른 도메인에서 요청 가능)
 
 # 모델 로드(머신러닝 모델 pkl 파일일)
