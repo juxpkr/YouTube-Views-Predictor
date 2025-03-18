@@ -47,7 +47,7 @@ export default {
     async predictViews() {
       this.loading = true;  // ✅ 로딩 시작
       try {
-        const response = await axios.post("http://127.0.0.1:5000/predict", {
+        const response = await axios.post("youtube-views-predictor-dafkdgc5eqamdabt.koreacentral-01.azurewebsites.net/predict", {
           day_of_week: this.day_of_week,
           hour: this.hour,
           title_length: this.title_length,

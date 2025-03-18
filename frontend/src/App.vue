@@ -1,6 +1,9 @@
 <template>
   <div id="app">
     <h1>YouTube 조회수 예측기</h1>
+    
+  </div>
+  <div>
     <PredictForm />
   </div>
 </template>
