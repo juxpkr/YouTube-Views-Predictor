@@ -1,16 +1,29 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS  # ✅ CORS 라이브러리 추가
 import joblib
 import pandas as pd
 
-app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})  # ✅ CORS 모든 요청 허용
+# 여기서 Vue 빌드 결과물을 서빙하기 위해 static_folder를 지정
+app = Flask(__name__, static_folder="../frontend/dist", static_url_path="")
+CORS(app)  # CORS 허용 (다른 도메인에서 요청 가능)
 
-# 📌 모델 파일의 올바른 경로 설정
+# 모델 로드(머신러닝 모델 pkl 파일일)
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "youtube_model.pkl")
 model = joblib.load(MODEL_PATH)  # ✅ 변경된 경로로 모델 로드
 
+# Vue 정적 파일 서빙
+# '/' 경로로 접근하면 Vue의 index.html 파일을 반환
+@app.route("/")
+def index():
+    return send_from_directory(app.static_folder, "index.html")
+
+# Vue 정적 파일(.js, .css 등) 서빙
+@app.route("/<path:path>")
+def serve_static(path):
+    return send_from_directory(app.static_folder, path)
+
+# 예측 API (POST)
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
@@ -35,4 +48,5 @@ def predict():
         return jsonify({"error": str(e)})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=5000, debug=True)
