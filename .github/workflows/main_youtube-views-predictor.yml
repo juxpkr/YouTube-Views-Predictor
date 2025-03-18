@@ -1,4 +1,4 @@
-name: Build and deploy Python + Vue app to Azure Web App
+name: Build and deploy Python + Vue app to Azure Web App - youtube-views-predictor
 
 on:
   push:
@@ -10,16 +10,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: read #This is required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
 
-      # 1) Node 설치 (Vue 빌드용)
+      # 1) Node 설정 (Vue 빌드용)
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 18   # 16 이하에서 crypto.getRandomValues 오류가 날 수 있으므로 18 이상 추천
 
       # 2) Vue 빌드
       - name: Install and build Vue
@@ -29,7 +29,7 @@ jobs:
           npm run build
           cd ..
 
-      # 3) Python 설정
+      # 3) Python 설정 (Flask)
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
@@ -40,21 +40,22 @@ jobs:
           python -m venv venv
           source venv/bin/activate
       
-      - name: Install Python dependencies
+      - name: Install dependencies
         run: pip install -r requirements.txt
         
-      # (Optional) PyTest나 기타 테스트 단계 추가 가능
+      # (Optional) PyTest 등 테스트 가능
 
+      # 4) 압축하여 업로드
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
-
+        run: |
+          # node_modules, venv 등 불필요한 폴더 제외하기 위해 --exclude 사용 가능
+          zip release.zip ./* -r -x "venv/*" "frontend/node_modules/*"
+      
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: |
-            release.zip
-            !venv/
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -62,7 +63,10 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
@@ -72,10 +76,18 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
+      # Azure 로그인
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2332CD9851B641E58859D3914D62026E }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D2AA0BEFAE194D22A3413F973B3F12D2 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2F681B92DCBE41F7BF310280F2059945 }}
+
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
           app-name: 'youtube-views-predictor'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_XXXX }}
+          # 배포할 패키지나 폴더를 지정하지 않으면 기본적으로 현재 디렉토리(./)가 배포 대상
