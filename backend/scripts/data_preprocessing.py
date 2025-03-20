@@ -6,7 +6,7 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")  # �
 os.makedirs(DATA_DIR, exist_ok=True)  # ✅ 폴더 없으면 생성
 
 # 📌 CSV 파일 경로 설정
-input_file = os.path.join(DATA_DIR, "youtube_trending_kr.csv")  # 원본 데이터 파일
+input_file = os.path.join(DATA_DIR, "youtube_trending_data.csv")  # 원본 데이터 파일
 output_file = os.path.join(DATA_DIR, "processed_youtube_data.csv")  # 저장할 파일
 
 # 📌 데이터 불러오기
