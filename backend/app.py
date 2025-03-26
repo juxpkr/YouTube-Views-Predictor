@@ -7,8 +7,8 @@ from flask_sqlalchemy import SQLAlchemy
 from models import db, Prediction  # ✅ 데이터베이스 모델 가져오기
 from config import DB_CONFIG  # ✅ 설정 파일 가져오기
 
-# 📌 Flask 앱 설정 (Vue 빌드된 정적 파일 포함)
-app = Flask(__name__, static_folder=os.path.abspath("../frontend_build"), static_url_path="")
+# 📌 Flask 앱 설정
+app = Flask(__name__)
 CORS(app)  # ✅ CORS 허용 (다른 도메인 요청 가능)
 
 # 📌 PostgreSQL 데이터베이스 연결 설정
@@ -22,14 +22,6 @@ db.init_app(app)
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "youtube_model.pkl")
 model = joblib.load(MODEL_PATH)
 
-# 📌 Vue 정적 파일 서빙
-@app.route("/")
-def index():
-    return send_from_directory(app.static_folder, "index.html")
-
-@app.route("/<path:path>")
-def serve_static(path):
-    return send_from_directory(app.static_folder, path)
 
 # 📌 조회수 예측 API (POST)
 @app.route("/predict", methods=["POST"])

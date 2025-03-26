@@ -20,9 +20,9 @@
       <button type="submit">예측하기</button>
     </form>
 
-    <div v-if="loading" class="loading">⏳ 예측 중...</div>
+    <div v-if="loading" class="loading">예측 중...</div>
     <div v-if="predictedViews !== null" class="result">
-      <h3>📊 예상 조회수</h3>
+      <h3>예상 조회수</h3>
       <p>{{ predictedViews.toLocaleString() }} 회</p>
     </div>
   </div>
@@ -50,7 +50,7 @@ export default {
         // Flask가 배포된 주소 (로컬 테스트: http://127.0.0.1:5000)
         // 실제 배포 시: "https://your-app.azurewebsites.net/predict"
         const url = "/predict"; // 같은 서버에 Vue와 Flask가 함께 있을 때는 상대 경로로 가능
-        const response = await axios.post("https://youtube-views-predictor-dafkdgc5eqamdabt.koreacentral-01.azurewebsites.net/predict", {
+        const response = await axios.post("http://127.0.0.1:5000/predict", {
           day_of_week: this.day_of_week,
           hour: this.hour,
           title_length: this.title_length,
@@ -92,7 +92,7 @@ input {
 }
 
 button {
-  background-color: #4CAF50;
+  background-color: #0a160b;
   color: white;
   padding: 10px 15px;
   border: none;

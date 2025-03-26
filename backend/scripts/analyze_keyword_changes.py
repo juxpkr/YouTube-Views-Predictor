@@ -76,6 +76,9 @@ merged_df["ChangeType"] = merged_df.apply(classify_change, axis=1)
 merged_df["AbsDiff"] = merged_df["Difference"].abs()
 merged_df = merged_df.sort_values(by="AbsDiff", ascending=False)
 
+# ✅ 중복된 Keyword 행 제거 (첫 번째 행만 남김)
+merged_df.drop_duplicates(subset=["Keyword"], inplace=True)
+
 # ✅ 상위 30개 출력
 top_30 = merged_df.head(30)
 
