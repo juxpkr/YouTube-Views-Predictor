@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from models import db, Prediction  
 from config import DB_CONFIG  
 
-# 📌 Flask 앱 설정
+# Flask 앱 설정
 app = Flask(__name__)
 CORS(app)  # CORS 허용 (다른 도메인 요청 가능)
 
