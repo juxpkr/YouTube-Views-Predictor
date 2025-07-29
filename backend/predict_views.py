@@ -1,10 +1,10 @@
 import pandas as pd
 import joblib
 
-# 📌 1. 저장된 모델 불러오기
+# 저장된 모델 불러오기
 model = joblib.load("youtube_model.pkl")
 
-# 📌 2. 예측할 새로운 영상 데이터 입력 (임의의 예제)
+# 예측할 새로운 영상 데이터 입력 (임의의 예제)
 new_video = pd.DataFrame({
     "likes": [50000],        # 좋아요 수
     "comments": [2000],      # 댓글 수
@@ -13,6 +13,6 @@ new_video = pd.DataFrame({
     "title_length": [35]     # 제목 길이
 })
 
-# 📌 3. 조회수 예측
+# 조회수 예측
 predicted_views = model.predict(new_video)
-print(f"📢 예측된 조회수: {int(predicted_views[0]):,}회")
+print(f"예측된 조회수: {int(predicted_views[0]):,}회")
